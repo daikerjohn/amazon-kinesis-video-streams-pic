@@ -2032,8 +2032,9 @@ STATUS mkvgenExtractCpdFromAnnexBFrame(PStreamMkvGenerator pStreamMkvGenerator, 
         naluHeader = *(PBYTE)(pCurPtr + 1);
 
         // Check for the H264 format IDR slice NAL type if h264 or IDR_W_RADL_NALU_TYPE if h265
+        // https://github.com/awslabs/amazon-kinesis-video-streams-producer-c/issues/298
         if (((pStreamMkvGenerator->contentType & MKV_CONTENT_TYPE_H264) != MKV_CONTENT_TYPE_NONE && (naluHeader & 0x80) == 0 &&
-             (naluHeader & 0x60) != 0 && (naluHeader & 0x1f) == IDR_NALU_TYPE) ||
+             (((naluHeader & 0x60) != 0 && (naluHeader & 0x1f) == IDR_NALU_TYPE) || ((naluHeader & 0x60) == 0 && (naluHeader & 0x1f) == 6))) ||
             ((pStreamMkvGenerator->contentType & MKV_CONTENT_TYPE_H265) != MKV_CONTENT_TYPE_NONE &&
              ((naluHeader >> 1) == IDR_W_RADL_NALU_TYPE || (naluHeader >> 1) == IDR_N_LP_NALU_TYPE))) {
             parsedSize = (UINT32)((PBYTE) pCurPtr - pCpd);
